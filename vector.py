@@ -7,12 +7,13 @@ from math import sqrt, acos
 from itertools import zip_longest
 
 class Vector:
+    eps = 1e-15
+    
     def __init__(self, *dimensions):
-        eps = 1e-16
         self.dimensions = list(dimensions)
         for i in range(len(self.dimensions)):
             comp = self.dimensions[i]
-            if type(comp) is not int and abs(comp - round(comp)) < eps:
+            if type(comp) is not int and abs(comp - round(comp)) < Vector.eps:
                 self.dimensions[i] = round(comp)
 
     def __str__(self):
@@ -73,6 +74,8 @@ class Vector:
                 if comp1 == None: comp1 = 0
                 if comp2 == None: comp2 = 0
                 scalar_product += comp1 * comp2
+            if abs(scalar_product - round(scalar_product)) < Vector.eps:
+                scalar_product = round(scalar_product)
             return scalar_product
         except AttributeError:
             return Vector(*[component * other if component else 0
