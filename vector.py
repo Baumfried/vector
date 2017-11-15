@@ -13,8 +13,19 @@ class Vector:
         self.dimensions = list(dimensions)
         for i in range(len(self.dimensions)):
             comp = self.dimensions[i]
-            if type(comp) is not int and abs(comp - round(comp)) < Vector.eps:
-                self.dimensions[i] = round(comp)
+            if type(comp) == int:
+                pass
+            elif type(comp) == complex:
+                newreal = comp.real
+                newimag = comp.imag
+                if abs(comp.real - round(comp.real)) < Vector.eps:
+                    newreal = round(comp.real)
+                if abs(comp.imag - round(comp.imag)) < Vector.eps:
+                    newimag = round(comp.imag)
+                self.dimensions[i] = complex(newreal, newimag)
+            else:
+                if abs(comp - round(comp)) < Vector.eps:
+                    self.dimensions[i] = round(comp)
 
     def __str__(self):
         s = ''
@@ -34,11 +45,11 @@ class Vector:
     def __ge__(self, other):
         return abs(self) >= abs(other)
     def __gt__(self, other):
-        return abs(self) > abs(other)    
+        return abs(self) > abs(other)
     def __abs__(self):
-        return sqrt(self*self)    
+        return sqrt(self*self)
     def __pos__(self):
-        return Vector(*self.dimensions)    
+        return Vector(*self.dimensions)
     def __neg__(self):
         return Vector(*[-component if component else 0
                         for component in self.dimensions])
@@ -73,9 +84,22 @@ class Vector:
             for comp1, comp2 in zip_longest(self.dimensions, other.dimensions):
                 if comp1 == None: comp1 = 0
                 if comp2 == None: comp2 = 0
+                if type(comp1) == complex: comp1 = comp1.conjugate()
                 scalar_product += comp1 * comp2
-            if abs(scalar_product - round(scalar_product)) < Vector.eps:
-                scalar_product = round(scalar_product)
+            if type(scalar_product) == complex:
+                scr = scalar_product.real
+                sci = scalar_product.imag
+                if abs(scr - round(scr)) < Vector.eps:
+                    scr = round(scr)
+                if abs(sci - round(sci)) < Vector.eps:
+                    sci = round(sci)
+                if sci == 0:
+                    scalar_product = scr
+                else:
+                    scalar_product = complex(scr, sci)
+            else:
+                if abs(scalar_product - round(scalar_product)) < Vector.eps:
+                    scalar_product = round(scalar_product)
             return scalar_product
         except AttributeError:
             return Vector(*[component * other if component else 0
